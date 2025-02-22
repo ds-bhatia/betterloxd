@@ -1,1 +1,1 @@
-Movie Reccomendation System for Noobathon 5.0
+Movie Recommendation System for Noobathon 5.0
