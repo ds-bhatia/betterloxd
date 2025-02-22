@@ -6,21 +6,39 @@ import seaborn as sns
 def main():
     st.set_page_config(page_title="Data Analysis Web App", layout="wide")
     
-    st.sidebar.title("📊 Data Analysis Web App")
+    st.sidebar.title("Betterloxd")
     st.sidebar.markdown("---")
-    option = st.sidebar.radio("**Select a section:**", ["🎬 Movies Dataset", "⭐ Ratings Dataset"])
+    main_option = st.sidebar.radio("**Select a section:**", ["📄 Dataset Summary", "📂 Dataset Details"])
     
-    if option == "🎬 Movies Dataset":
-        movies_infographics()
-    elif option == "⭐ Ratings Dataset":
-        ratings_infographics()
+    if main_option == "📄 Dataset Summary":
+        dataset_summary()
+    elif main_option == "📂 Dataset Details":
+        sub_option = st.sidebar.radio("**Select a dataset:**", ["🎬 Movies Dataset", "⭐ Ratings Dataset"])
+        if sub_option == "🎬 Movies Dataset":
+            movies_infographics()
+        elif sub_option == "⭐ Ratings Dataset":
+            ratings_infographics()
+
+def dataset_summary():
+    st.title("📄 Dataset Summary")
+    ratings = pd.read_csv("ratings.csv")
+    
+    num_ratings = len(ratings)
+    num_movies = ratings['movieId'].nunique()
+    num_users = ratings['userId'].nunique()
+    avg_rating = ratings['rating'].mean()
+    
+    st.write(f"**No. of ratings:** {num_ratings}")
+    st.write(f"**No. of movies:** {num_movies}")
+    st.write(f"**No. of users:** {num_users}")
+    st.write(f"**Average rating:** {avg_rating:.2f}")
 
 def movies_infographics():
     st.title("🎬 Movies Dataset Infographics")
     movies = pd.read_csv("movies.csv")
     
     st.write("### Preview of Dataset")
-    st.write(movies.head())
+    st.write(movies.head(20))
     
     st.subheader("Distribution of Movie Genres")
     movies['genres'] = movies['genres'].str.split('|')
