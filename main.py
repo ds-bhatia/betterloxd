@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+from sklearn.metrics.pairwise import cosine_similarity
 
 ratings = pd.read_csv('ratings.csv')
 movies = pd.read_csv('movies.csv')
@@ -28,4 +29,27 @@ plt.title("Distribution of Movie Genres")
 plt.xlabel("Number of Movies")
 plt.ylabel("Genres")
 
-plt.show()
+#plt.show()
+
+
+data = pd.merge(ratings, movies, on='movieId')
+
+global_avg_rating = data['rating'].mean()
+movie_user_matrix = data.pivot_table(index='title', columns='userId', values='rating', fill_value=global_avg_rating)
+
+movie_similarity = cosine_similarity(movie_user_matrix)
+movie_similarity_df = pd.DataFrame(movie_similarity, index=movie_user_matrix.index, columns=movie_user_matrix.index)
+
+def recommend_movies(movie_title, num_recommendations):
+    if movie_title not in movie_similarity_df.index:
+        return "Movie not found!"
+    
+    similar_movies = movie_similarity_df[movie_title].sort_values(ascending=False)[1:num_recommendations + 1]
+    
+    return similar_movies
+
+num_recomendations = int(input("Enter number of movie recomendations you want: "))
+movie_title = input("Enter the movie title - eg: Toy Story (1995): ")
+a = recommend_movies(movie_title, num_recomendations)
+print(a.head())
+
