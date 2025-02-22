@@ -10,7 +10,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 def main():
     st.set_page_config(page_title="Data Analysis & Recommendation Web App", layout="wide")
     
-    st.sidebar.title("📊 Data Analysis & Recommendation Web App")
+    st.sidebar.title("📊 Betterloxd")
     st.sidebar.markdown("---")
     main_option = st.sidebar.radio("**Select a section:**", ["📄 Dataset Summary", "📂 Dataset Details", "🎥 Movie Recommendation"])
     
