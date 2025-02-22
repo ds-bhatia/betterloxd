@@ -48,8 +48,8 @@ def recommend_movies(movie_title, num_recommendations):
     
     return similar_movies
 
-num_recomendations = int(input("Enter number of movie recomendations you want: "))
+num_recomendations = int(input("Enter number of movie recomendations: "))
 movie_title = input("Enter the movie title - eg: Toy Story (1995): ")
 a = recommend_movies(movie_title, num_recomendations)
-print(a.head())
+print(a.head(num_recomendations))
 
