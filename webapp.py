@@ -3,19 +3,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
-import requests
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.neighbors import NearestNeighbors
 from sklearn.feature_extraction.text import TfidfVectorizer
-
-def fetch_movie_poster(movie_title):
-    movies = pd.read_csv("movies.csv")
-    query = movie_title + " movie poster"
-    url = f"https://www.googleapis.com/customsearch/v1?q={query}&searchType=image&key=YOUR_API_KEY&cx=YOUR_CX_ID"
-    response = requests.get(url).json()
-    if "items" in response:
-        return response["items"][0]["link"]
-    return None
 
 def main():
     st.set_page_config(page_title="Data Analysis & Recommendation Web App", layout="wide")
@@ -98,7 +88,7 @@ def movie_recommendation():
     
     st.subheader("Get Movie Recommendations")
     movie_title = st.selectbox("Select a movie:", movies['title'].values)
-    num_recommendations = st.slider("Number of recommendations:", 1, 10, 5)
+    num_recommendations = st.slider("Number of recommendations:", 1, 20, 5)
     model_type = st.radio("Choose Recommendation Model:", ["Collaborative Filtering", "Content-Based Filtering", "Hybrid Model", "User-Based Filtering"])
     
     if st.button("Get Recommendations"):
@@ -123,21 +113,11 @@ def movie_recommendation():
                 recommendations = similar_users_ratings.index.tolist()
             else:
                 recommendations = "User not found!"
-<<<<<<< HEAD
         i = 1
         st.write("Recommended Movies: ")
         for movie in recommendations:
             st.write(i, movie) 
             i += 1
-=======
-        
-        for movie in recommendations.index:
-            poster_url = fetch_movie_poster(movie)
-            if poster_url:
-                st.image(poster_url, caption=movie, use_column_width=True)
-            else:
-                st.write(movie)
->>>>>>> 21322dc4c602fdfa252ca7dbbb3863de10338b4f
 
 if __name__ == "__main__":
     main()
