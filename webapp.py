@@ -94,23 +94,30 @@ def movie_recommendation():
     if st.button("Get Recommendations"):
         if model_type == "Collaborative Filtering":
             recommendations = movie_similarity_df[movie_title].sort_values(ascending=False)[1:num_recommendations + 1]
+            recommendations = recommendations.index.tolist()
         elif model_type == "Content-Based Filtering":
             recommendations = content_similarity_df[movie_title].sort_values(ascending=False)[1:num_recommendations + 1]
+            recommendations = recommendations.index.tolist()
         elif model_type == "Hybrid Model":
             collaborative_movies = movie_similarity_df[movie_title].sort_values(ascending=False)[1:11]
             content_movies = content_similarity_df[movie_title].sort_values(ascending=False)[1:11]
             hybrid_recommendations = pd.concat([collaborative_movies, content_movies]).groupby(level=0).mean()
-            recommendations = hybrid_recommendations.sort_values(ascending=False).head(num_recommendations)
+            recommendations = hybrid_recommendations.sort_values(ascending=False)[1:num_recommendations + 1]
+            recommendations = recommendations.index.tolist()
         elif model_type == "User-Based Filtering":
             user_id = st.number_input("Enter User ID:", min_value=1, step=1)
             if user_id in user_rating_matrix.index:
                 distances, indices = knn.kneighbors([user_rating_matrix.loc[user_id]], n_neighbors=6)
                 similar_users = indices.flatten()[1:]
-                similar_users_ratings = user_rating_matrix.iloc[similar_users].mean().sort_values(ascending=False)
-                recommendations = similar_users_ratings.head(num_recommendations)
+                similar_users_ratings = user_rating_matrix.iloc[similar_users].mean().sort_values(ascending=False)[1:num_recommendations + 1]
+                recommendations = similar_users_ratings.index.tolist()
             else:
                 recommendations = "User not found!"
-        st.write(recommendations)
+        i = 1
+        st.write("Recommended Movies: ")
+        for movie in recommendations:
+            st.write(i, movie) 
+            i += 1
 
 if __name__ == "__main__":
     main()
