@@ -15,10 +15,11 @@ print(f"No. of ratings: {num_ratings}")
 print(f"No. of movies: {num_movies}")
 print(f"No. of users: {num_users}")
 
+plt.figure()
 sns.countplot(x="rating", data=ratings, palette="terrain_r")
 plt.title("Distribution of movie ratings", fontsize=14)
-plt.show()
 
+plt.figure()
 movies['genres'] = movies['genres'].str.split('|')
 genres_exploded = movies.explode('genres')
 genre_counts = genres_exploded['genres'].value_counts()
@@ -26,4 +27,5 @@ sns.barplot(x=genre_counts.values, y=genre_counts.index)
 plt.title("Distribution of Movie Genres")
 plt.xlabel("Number of Movies")
 plt.ylabel("Genres")
+
 plt.show()
