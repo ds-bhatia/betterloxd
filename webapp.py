@@ -108,7 +108,7 @@ def recall_at_k(k=5, num_users=10):
         
     return np.mean(recall_scores) if recall_scores else 0
 
-def hit_rate(k=5, num_users=10):
+def hit_rate_avg(k=5, num_users=10):
     hit_count = 0
     
     sampled_users = random.sample(list(test_data['userId'].unique()), min(num_users, len(test_data['userId'].unique())))
@@ -184,12 +184,17 @@ def movie_recommendation():
         if st.button("Compute Metrics"):
             precision_k = precision_at_k(num_recommendations)
             recall_k = recall_at_k(num_recommendations)
-            hit_rate_k = hit_rate(num_recommendations)
+            if precision_k>0:
+                hit_rate_k=1
+            else:
+                hit_rate_k=0
+            hit_rate_k_avg = hit_rate_avg(num_recommendations)
             #rmse_value = rmse()
             map_ = map(num_recommendations)
             st.write(f"Precision@{num_recommendations}: {precision_k:.4f}")
             st.write(f"Overall Recall@{num_recommendations}: {recall_k:.4f}")
-            st.write(f"Overall Hit Rate@{num_recommendations}: {hit_rate_k:.4f}")
+            st.write(f"Hit Rate@{num_recommendations}: {hit_rate_k:.4f}")
+            st.write(f"Overall Hit Rate@{num_recommendations}: {hit_rate_k_avg:.4f}")
            # st.write(f"RMSE: {rmse_value:.4f}")
             st.write(f"Mean Average Precision: {map_}")
 
