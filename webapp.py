@@ -211,7 +211,7 @@ def movie_recommendation():
             i = 1
             st.write("Recommended Movies: ")
             for movie in recommendations:
-                st.write(i, movie, movies["id"]) 
+                st.write(i, movie) 
                 i += 1
     
 
