@@ -43,6 +43,46 @@ def recommend_movies_collaborative(movie_title, num_recommendations=5, user_id=N
     
     return similar_movies.head(num_recommendations)
 
+def recall_at_k(k=5):
+    recall_scores = []
+    
+    user = random.choice(test_data['userId'].unique())
+    user_test_movies = set(test_data[test_data['userId'] == user]['title'])
+    
+    if len(user_test_movies) == 0:
+        return 0  # Avoid division by zero if user has no relevant movies in test set
+
+    test_movie = np.random.choice(list(user_test_movies))
+    recommended_movies = recommend_movies_collaborative(test_movie, k, user_id=user)
+
+    recommended_titles = set(recommended_movies.index)
+    relevant_recommendations = recommended_titles.intersection(user_test_movies)
+    
+    recall = len(relevant_recommendations) / len(user_test_movies)
+    recall_scores.append(recall)
+    
+    print(f"User {user}: Testing with '{test_movie}'")
+    
+    a = list(recommended_titles)
+    print("Recommended: ")
+    for i in a:
+        print(i)
+    print("-------------")
+    
+    print(f"Relevant Recommendations:")
+    a = list(relevant_recommendations)
+    for i in a:
+        print(i)
+    print("-------------")
+    
+    
+
+    return np.mean(recall_scores) if recall_scores else 0
+
+
+# Compute and print Recall@K
+recall_k = recall_at_k(7)
+print(f"\nOverall Recall@7: {recall_k:.4f}")
 
 
 ### PRECISION@K EVALUATION ###
@@ -79,7 +119,9 @@ def precision_at_k(k=5):
     for i in a:
         print(i)
     print("-------------")
-    print(f"Precision: {precision:.4f}\n")
+
+ 
+    
 
     return np.mean(precision_scores) if precision_scores else 0
 
