@@ -128,3 +128,43 @@ def precision_at_k(k=5):
 # Compute and print Precision@K
 precision_k = precision_at_k(7)
 print(f"\nOverall Precision@7: {precision_k:.4f}")
+
+def hit_rate_at_k(k=5):
+    hit_scores = []
+    
+    user = random.choice(test_data['userId'].unique())
+    user_test_movies = set(test_data[test_data['userId'] == user]['title'])
+    
+    if len(user_test_movies) == 0:
+        return 0  # Avoid division by zero if user has no relevant movies in test set
+
+    test_movie = np.random.choice(list(user_test_movies))
+    recommended_movies = recommend_movies_collaborative(test_movie, k, user_id=user)
+
+    recommended_titles = set(recommended_movies.index)
+    relevant_recommendations = recommended_titles.intersection(user_test_movies)
+    
+    hit = 1 if len(relevant_recommendations) > 0 else 0
+    hit_scores.append(hit)
+    
+    print(f"User {user}: Testing with '{test_movie}'")
+    
+    a = list(recommended_titles)
+    print("Recommended: ")
+    for i in a:
+        print(i)
+    print("-------------")
+    
+    print(f"Relevant Recommendations:")
+    a = list(relevant_recommendations)
+    for i in a:
+        print(i)
+    print("-------------")
+    
+    print(f"Hit Rate: {hit:.4f}\n")
+
+    return np.mean(hit_scores) if hit_scores else 0
+
+# Compute and print Hit Rate@K
+hit_rate_k = hit_rate_at_k(7)
+print(f"\nOverall Hit Rate@7: {hit_rate_k:.4f}")
