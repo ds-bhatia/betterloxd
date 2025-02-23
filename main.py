@@ -7,6 +7,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.neighbors import NearestNeighbors
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error
 
 # Load datasets
 ratings = pd.read_csv('ratings.csv')
@@ -42,27 +43,30 @@ def recommend_movies_collaborative(movie_title, num_recommendations=5, user_id=N
         similar_movies = similar_movies[~similar_movies.index.isin(user_rated_movies)]
     
     return similar_movies.head(num_recommendations)
-from sklearn.metrics import mean_squared_error
-from sklearn.metrics import mean_squared_error
+
+
+
 
 def evaluate_at_k(k=5):
     precision_scores = []
     recall_scores = []
     hit_scores = []
     rmse_scores = []
+    user_avg_precision = []  # To store average precision per user for MAP
 
     first_user = True  # To print details only for the first user
 
     # Loop over all users in the test set
     for user in test_data['userId'].unique():
         user_test_movies = set(test_data[test_data['userId'] == user]['title'])
-        
+
         if len(user_test_movies) == 0:
             continue  # Skip users with no relevant movies in the test set
 
         user_actual_ratings = test_data[test_data['userId'] == user][['title', 'rating']]  # Actual ratings
 
         recommended_movie_ratings = []  # For storing predicted ratings for the RMSE calculation
+        user_precision_scores = []  # For storing precision scores for each test movie in this user
 
         for test_movie in user_test_movies:  
             # Get recommendations, ensuring the test movie is not included
@@ -85,6 +89,9 @@ def evaluate_at_k(k=5):
             precision_scores.append(precision)
             recall_scores.append(recall)
             hit_scores.append(hit)
+
+            # For MAP calculation, compute precision for the current test movie
+            user_precision_scores.append(precision)
 
             # Get predicted ratings for RMSE
             for recommended_movie in recommended_titles:
@@ -113,6 +120,10 @@ def evaluate_at_k(k=5):
 
                 first_user = False  # Ensure we print details only once
 
+        # Compute Average Precision for the user
+        if user_precision_scores:
+            user_avg_precision.append(np.mean(user_precision_scores))
+
     # Calculate RMSE from the predicted and actual ratings
     if recommended_movie_ratings:
         predicted_ratings, actual_ratings = zip(*recommended_movie_ratings)
@@ -124,12 +135,20 @@ def evaluate_at_k(k=5):
     avg_precision = np.mean(precision_scores) if precision_scores else 0
     avg_recall = np.mean(recall_scores) if recall_scores else 0
     avg_hit_rate = np.mean(hit_scores) if hit_scores else 0  # Should not always be 1 now
+    map_score = np.mean(user_avg_precision) if user_avg_precision else 0  # Mean Average Precision (MAP)
+
+    # Print precision for random users
+    random_users = random.sample(list(test_data['userId'].unique()), 3)
+    for user in random_users:
+        user_precision = np.mean([precision for i, precision in enumerate(precision_scores) if test_data.iloc[i]['userId'] == user])
+        print(f"Precision for User {user}: {user_precision:.4f}")
 
     print(f"\nOverall Metrics at K={k}:")
-    print(f"Average Precision@{k}: {avg_precision:.4f}")
+    print(f"Mean Average Precision (MAP)@{k}: {map_score:.4f}")
     print(f"Average Recall@{k}: {avg_recall:.4f}")
     print(f"Average Hit Rate@{k}: {avg_hit_rate:.4f}")  # Should not always be 1 now
     print(f"RMSE: {rmse:.4f}")  # Print RMSE
 
 # Run evaluation with K=7
 evaluate_at_k(k=7)
+
