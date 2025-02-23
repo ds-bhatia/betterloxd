@@ -16,3 +16,5 @@ To execute:- clone the repository and run `streamlit run main.py`
 ## Movie Recommendation Page
 ### User-Based Filtering Method
 ![image](https://github.com/user-attachments/assets/dbf914ee-9783-4df6-b72c-de6bca3059ee)
+![image](https://github.com/user-attachments/assets/25897933-0bd9-4fb4-bcb3-fc6ecfae6edc)
+
